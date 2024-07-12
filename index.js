@@ -24,7 +24,7 @@ import Engagement from "./models/Bloglikesandviews.js";
 //app.use("/", router);
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://blogfrontend-theta.vercel.app",
     credentials: true,
   })
 );
