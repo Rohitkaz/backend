@@ -88,7 +88,7 @@ Auth.get("/logout", (req, res) => {
     maxAge: 0,
     secure: true,
     httpOnly: true,
-    domain: "localhost",
+
     path: "/",
   });
   res.cookie("refreshToken", "", {
@@ -96,7 +96,7 @@ Auth.get("/logout", (req, res) => {
     maxAge: 0,
     secure: true,
     httpOnly: true,
-    domain: "localhost",
+
     path: "/",
   });
   res.status(204).send("hi");
