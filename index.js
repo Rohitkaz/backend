@@ -143,6 +143,10 @@ app.get("/blog/:id", async (req, res) => {
 
 app.use(verifyJWT);
 
+app.get("/isAuthenticated", async (req, res) => {
+  console.log("hello");
+  if (req.user) res.status(200).send(req.user);
+});
 app.get("/like/:id", async (req, res) => {
   console.log("like");
   const user = await Engagement.findOne({
