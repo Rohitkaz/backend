@@ -7,7 +7,6 @@ const postSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
   },
 
   content: {
@@ -35,8 +34,7 @@ const postSchema = new mongoose.Schema({
     default: 0,
   },
   createdAt: {
-    type: Date,
-    default: Date.now,
+    type: String,
   },
 });
 const posts = new mongoose.model("posts", postSchema);
