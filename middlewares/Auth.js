@@ -26,7 +26,7 @@ Auth.post("/register", async (req, res) => {
     password: encpassword,
   };
   const user1 = await users.findOne({ name: name1 });
-  if (user1) return res.status(409).json("user already exist");
+  if (user1) return res.status(409).send("user already exist");
 
   const user = new users(data);
   await user.save();
@@ -39,7 +39,7 @@ Auth.post("/login", async (req, res) => {
   const user = await users.findOne({ name: name });
   // console.log(user.id);
   if (!user) {
-    return res.status(404).json("user not found");
+    return res.status(404).send("user not found");
   } else {
     const match = await bcrypt.compare(password, user.password);
     if (match === true) {
@@ -74,7 +74,7 @@ Auth.post("/login", async (req, res) => {
       });
 
       res.status(200).json({ name });
-    } else res.status(401);
+    } else res.status(401).send("invalid username or password");
   }
 
   // verify the name
@@ -88,7 +88,7 @@ Auth.get("/logout", (req, res) => {
     maxAge: 0,
     secure: true,
     httpOnly: true,
-
+    domain: "localhost",
     path: "/",
   });
   res.cookie("refreshToken", "", {
@@ -96,9 +96,10 @@ Auth.get("/logout", (req, res) => {
     maxAge: 0,
     secure: true,
     httpOnly: true,
-
+    domain: "localhost",
     path: "/",
   });
+
   res.status(204).send("hi");
 });
 // middlewarte
@@ -114,7 +115,7 @@ Auth.use((req, res, next) => {
       process.env.REFRESH_TOKEN_SECRET,
       (err, decoded) => {
         if (err) {
-          return res.status(400).json("Unauthorized");
+          return res.status(400).send("Unauthorized");
         }
         const user = decoded;
         const newAccessToken = jwt.sign(
@@ -151,7 +152,7 @@ Auth.use((req, res, next) => {
   } else {
     jwt.verify(accessToken, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
       if (err) {
-        return res.status(400).json("invalid user");
+        return res.status(400).send("invalid user");
       }
       req.user = decoded;
       return next(); // Use 'return' here to exit the callback

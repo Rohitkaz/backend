@@ -44,8 +44,18 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 app.get("/blog", async (req, res) => {
-  const post = await posts.find({});
-  res.status(200).send(post);
+  try {
+    const Latestpost = await posts.find({}).sort({ createdAt: -1 }).limit(10);
+    const Popularpost = await posts.find({}).sort({ views: -1 }).limit(10);
+    const Trending = await posts
+      .find({})
+      .sort({ likes: -1, views: -1 })
+      .limit(10);
+
+    res.status(200).send({ Latestpost, Popularpost, Trending });
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
 });
 //app.use(verifyCookie);
 
@@ -147,6 +157,7 @@ app.get("/isAuthenticated", async (req, res) => {
   console.log("hello");
   if (req.user) res.status(200).send(req.user);
 });
+
 app.get("/like/:id", async (req, res) => {
   console.log("like");
   const user = await Engagement.findOne({
@@ -191,16 +202,25 @@ app.get("/dislike/:id", async (req, res) => {
   }
 });
 app.post("/newblog", upload.single("image"), async function (req, res, next) {
-  const blogcnt = JSON.parse(req.body.blogcnt);
-  console.log(req.user);
-  const post = new posts({
-    maintitle: req.body.maintitle,
-    description: req.body.description,
-    content: blogcnt,
-    image: req.file.filename,
-    author: req.user.name,
-  });
-  await post.save();
+  try {
+    const blogcnt = JSON.parse(req.body.blogcnt);
+    console.log(req.user);
+    const date = new Date();
+    const createdAt = date.toLocaleDateString();
+    const post = new posts({
+      maintitle: req.body.maintitle,
+      description: req.body.description,
+      content: blogcnt,
+      image: req.file.filename,
+      author: req.user.name,
+      createdAt: createdAt,
+    });
+
+    await post.save();
+    res.status(200).send(post._id);
+  } catch (err) {
+    res.status(500).send("error occured while uploading ");
+  }
 });
 app.get("/dashboard", async (req, res) => {
   console.log(req.user.name);
