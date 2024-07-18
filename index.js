@@ -28,6 +28,7 @@ app.use(
     credentials: true,
   })
 );
+
 app.use("/images", express.static("uploads"));
 app.use("/Auth", Auth);
 //app.use("/blog", Sendblog);
@@ -42,6 +43,27 @@ const storage = multer.diskStorage({
   },
 });
 const upload = multer({ storage: storage });
+app.get("/search", async (req, res) => {
+  const { query } = req.query;
+
+  if (!query) {
+    return res.status(400).json({ error: "Query parameter is required" });
+  }
+
+  try {
+    // Search for posts where the maintitle or description matches the query
+    const searchResults = await posts.find({
+      $or: [
+        { maintitle: { $regex: query, $options: "i" } },
+        { description: { $regex: query, $options: "i" } },
+      ],
+    });
+
+    res.status(200).send(searchResults);
+  } catch (error) {
+    res.status(500).json({ error: "An error occurred while searching" });
+  }
+});
 
 app.get("/blog", async (req, res) => {
   try {
@@ -224,12 +246,42 @@ app.post("/newblog", upload.single("image"), async function (req, res, next) {
 });
 app.get("/dashboard", async (req, res) => {
   console.log(req.user.name);
+  const username = req.user.name;
+  var userdata;
   const latestcomment = await comments
     .find({ postAuthor: req.user.name })
     .sort({ createdAt: -1 })
     .limit(10);
   console.log(latestcomment);
-  res.status(200).send(latestcomment);
+  try {
+    const result = await posts.aggregate([
+      {
+        $match: { author: username },
+      },
+      {
+        $group: {
+          _id: "$author",
+          totalViews: { $sum: "$views" },
+          totalComments: { $sum: "$comments" },
+          totalLikes: { $sum: "$likes" },
+        },
+      },
+    ]);
+
+    if (result.length > 0) {
+      userdata = result[0];
+    } else {
+      userdata = {
+        totalViews: 0,
+        totalComments: 0,
+        totalLikes: 0,
+      };
+    }
+  } catch (error) {
+    console.error("Error aggregating user blog stats:", error);
+  }
+  console.log(userdata);
+  res.status(200).send({ latestcomment, username, userdata });
 });
 app.get("/yourblog", async (req, res) => {
   const author = req.user.name;
@@ -242,13 +294,15 @@ app.post("/comment", async (req, res) => {
   const content = req.body.comment;
   const post_id = req.body.blog_id;
   const user_id = req.user.id;
-
+  const date = new Date();
+  const createdAt = date.toLocaleDateString();
   const comment = new comments({
     postId: post_id,
     userId: user_id,
     username: req.user.name,
     content: content,
     postAuthor: req.body.blogauthor,
+    createdAt: createdAt,
   });
   const blog = await posts.findOneAndUpdate(
     { _id: req.body.blog_id },
@@ -261,7 +315,8 @@ app.post("/reply", async (req, res) => {
   const content = req.body.commreply;
   const post_id = req.body.blog_id;
   const user_id = req.user.id;
-
+  const date = new Date();
+  const createdAt = date.toLocaleDateString();
   const parentId = req.body.commentid;
   console.log(user_id);
   const comment = new comments({
@@ -270,6 +325,7 @@ app.post("/reply", async (req, res) => {
     username: req.user.name,
     content: content,
     parentId: parentId,
+    createdAt: createdAt,
   });
 
   await comment.save();

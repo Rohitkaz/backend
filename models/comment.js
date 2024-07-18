@@ -9,7 +9,7 @@ const CommentSchema = new mongoose.Schema({
   parentId: { type: String, default: null },
   likedby: { type: Array },
   likes: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now },
+  createdAt: { type: String },
   updatedAt: { type: Date, default: Date.now },
 });
 
