@@ -316,20 +316,30 @@ app.post("/reply", async (req, res) => {
   const post_id = req.body.blog_id;
   const user_id = req.user.id;
   const date = new Date();
+  const commentid = req.body.commentid;
   const createdAt = date.toLocaleDateString();
-  const parentId = req.body.commentid;
-  console.log(user_id);
-  const comment = new comments({
-    postId: post_id,
-    userId: user_id,
-    username: req.user.name,
-    content: content,
-    parentId: parentId,
-    createdAt: createdAt,
-  });
+  const parentcomment = await comments.findOne({ _id: commentid });
+  var parentId;
+  if (parentcomment.parentId == null) parentId = commentid;
+  else parentId = parentcomment.parentId;
 
-  await comment.save();
-  res.status(200).send(comment);
+  console.log(user_id);
+  try {
+    const comment = new comments({
+      postId: post_id,
+      userId: user_id,
+      username: req.user.name,
+      content: content,
+      parentId: parentId,
+      createdAt: createdAt,
+      parentUsername: req.body.parentUsername,
+    });
+
+    await comment.save();
+    res.status(200).send(comment);
+  } catch (err) {
+    res.send(500).send("internal server error");
+  }
 });
 app.post("/likecomments", async (req, res) => {
   const user_id = req.user.id;
