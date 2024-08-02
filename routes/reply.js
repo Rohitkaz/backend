@@ -26,7 +26,8 @@ reply.post("", async (req, res) => {
       content: content,
       parentId: parentId,
       createdAt: createdAt,
-      parentUsername: req.body.parentUsername,
+      Repliedto: parentcomment.username,
+      Repliedtoid: commentid,
     });
 
     await comment.save();
