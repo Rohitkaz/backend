@@ -32,6 +32,8 @@ import comment from "./routes/comment.js";
 import reply from "./routes/reply.js";
 import likecomment from "./routes/likecomment.js";
 import deletecomment from "./routes/commentdelete.js";
+import editblog from "./routes/Editblog.js";
+
 
 app.use(
   cors({
@@ -41,6 +43,8 @@ app.use(
 );
 
 app.use("/search", search);
+app.use("/editblog",editblog)
+
 app.use("/images", express.static("uploads"));
 app.use("/Auth", Auth);
 app.use("/blog", blog);

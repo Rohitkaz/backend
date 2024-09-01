@@ -18,7 +18,13 @@ dotenv.config();
 Auth.post("/register", async (req, res) => {
   const name1 = req.body.name;
   const password1 = req.body.password;
+
+  if(password1.trim().length<8)
+    {
+      return res.status(400).send("password should be atleast 8 characters without space")
+    }
   console.log(req.body);
+  try{
   const encpassword = await bcrypt.hash(password1, 10);
   // console.log(encpassword);
   const data = {
@@ -30,12 +36,18 @@ Auth.post("/register", async (req, res) => {
 
   const user = new users(data);
   await user.save();
-  return res.status(200).json("user regisetered");
+  return res.status(200).send("user regisetered");
+}
+  catch(err)
+  {
+    res.status(500).send("internal server error");
+  }
 });
 Auth.post("/login", async (req, res) => {
   const name = req.body.name;
   const password = req.body.password;
   console.log(req.body.name);
+  try{
   const user = await users.findOne({ name: name });
   // console.log(user.id);
   if (!user) {
@@ -76,6 +88,11 @@ Auth.post("/login", async (req, res) => {
       res.status(200).json({ name });
     } else res.status(401).send("invalid username or password");
   }
+}
+catch(err)
+{
+  res.status(500).send("internal server error");
+}
 
   // verify the name
 
@@ -88,7 +105,7 @@ Auth.get("/logout", (req, res) => {
     maxAge: 0,
     secure: true,
     httpOnly: true,
-
+    domain: "localhost",
     path: "/",
   });
   res.cookie("refreshToken", "", {
@@ -96,14 +113,14 @@ Auth.get("/logout", (req, res) => {
     maxAge: 0,
     secure: true,
     httpOnly: true,
-
+    domain: "localhost",
     path: "/",
   });
 
   res.status(204).send("hi");
 });
-// middlewarte
-Auth.use((req, res, next) => {
+// middleware
+/*Auth.use((req, res, next) => {
   const accessToken = req.cookies.jwt;
 
   if (!accessToken && !req.cookies.refreshToken)
@@ -159,5 +176,5 @@ Auth.use((req, res, next) => {
     });
   }
 });
-
+*/
 export default Auth;

@@ -16,6 +16,7 @@ search.get("", async (req, res) => {
         { description: { $regex: query, $options: "i" } },
       ],
     });
+    res.set({ "Cache-Control": "max-age=200" });
 
     res.status(200).send(searchResults);
   } catch (error) {

@@ -16,7 +16,10 @@ const postSchema = new mongoose.Schema({
   image: {
     type: String,
   },
-
+authorId:{
+  type:String,
+  required:true,
+},
   author: {
     type: String,
     required: true,
@@ -36,6 +39,10 @@ const postSchema = new mongoose.Schema({
   createdAt: {
     type: String,
   },
+  updatedAt:{
+    type:String,
+    default:Date.now()
+  }
 });
 const posts = new mongoose.model("posts", postSchema);
 export default posts;

@@ -22,6 +22,7 @@ dashboard.get("", async (req, res) => {
       {
         $group: {
           _id: "$author",
+          totalBlogs: { $sum: 1 },
           totalViews: { $sum: "$views" },
           totalComments: { $sum: "$comments" },
           totalLikes: { $sum: "$likes" },
@@ -36,6 +37,7 @@ dashboard.get("", async (req, res) => {
         totalViews: 0,
         totalComments: 0,
         totalLikes: 0,
+        totalBlogs:0,
       };
     }
   } catch (error) {

@@ -22,12 +22,14 @@ newblog.post("", upload.single("image"), async function (req, res, next) {
     console.log(req.user);
     const date = new Date();
     const createdAt = date.toLocaleDateString();
+
     const post = new posts({
       maintitle: req.body.maintitle,
       description: req.body.description,
       content: blogcnt,
       image: req.file.filename,
       author: req.user.name,
+      authorId:req.user.id,
       createdAt: createdAt,
     });
 

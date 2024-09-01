@@ -26,7 +26,9 @@ comment.post("", async (req, res) => {
       { _id: req.body.blog_id },
       { $inc: { comments: 1 } }
     );
+
     await comment.save();
+
     res.status(200).send(comment);
   } catch (err) {
     res.status(500).send("internal server error");
