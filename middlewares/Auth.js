@@ -117,7 +117,7 @@ Auth.get("/logout", (req, res) => {
     path: "/",
   });
 
-  res.status(200).send("hi");
+ return res.status(200).send("hi");
 });
 // middleware
 /*Auth.use((req, res, next) => {

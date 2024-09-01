@@ -10,16 +10,16 @@ function cacheget() {
     return null;
   }
   const data = {
-    Latestpost: cache.get("latest"),
-    Popularpost: cache.get("popular"),
-    Trending: cache.get("trending"),
+    Latestpost: cache.get("latest").latest,
+    Popularpost: cache.get("popular").popularpost,
+    Trending: cache.get("trending").trending,
   };
   return data;
 }
 function cacheset(latest, popularpost, trending) {
-  cache.set("latest", latest);
-  cache.set("trending", trending);
-  cache.set("popular", popularpost);
+  cache.set("latest", {latest:latest,Date:Date.now()});
+  cache.set("trending", {trending:trending,Date:Date.now()});
+  cache.set("popular", {popularpost:popularpost,Date:Date.now()});
 }
 
 async function getAllBlogs() {
