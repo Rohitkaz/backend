@@ -17,6 +17,7 @@ blog.get("", async (req, res) => {
 
     res.status(200).send(blogs);
   } catch (err) {
+    console.log(err.message);
     res.status(500).send(err.message);
   }
 });

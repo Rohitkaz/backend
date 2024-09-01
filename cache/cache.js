@@ -5,7 +5,7 @@ const cache = singleton("serverCache", () => new Map());
 
 function cacheget() {
   const duration=60000*10;
-  if (cache.size == 0 || (Date.now()-cache.get("latestcomment").Date)>duration) {
+  if (cache.size == 0 || (Date.now()-cache.get("latest").Date)>duration) {
     console.log("here");
     return null;
   }
