@@ -32,7 +32,7 @@ import comment from "./routes/comment.js";
 import reply from "./routes/reply.js";
 import likecomment from "./routes/likecomment.js";
 import deletecomment from "./routes/commentdelete.js";
-import editblog from "./routes/Editblog.js";
+import editblog from "./routes/editblog.js";
 
 
 app.use(
